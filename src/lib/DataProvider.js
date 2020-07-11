@@ -6,7 +6,7 @@ export default class DataProviderFactory {
         const repository = new ResourceRepository();
         const ext = String(filePath.split(".").pop());
         const configs = repository.getConfig(ext, filePath, "Yes", 0);
-        const connector =  new ResourceConnector(configs);
+        const connector = new ResourceConnector(configs);
         return new DataProvider(connector);
     }
 }
@@ -33,23 +33,23 @@ class DataProvider {
             try {
                 const res = this.execSql(sql);
                 resolve(res);
-            }catch(e){
+            } catch (e) {
                 reject([]);
             }
-        })
+        });
     }
 
     getAllOfficer() {
         return new Promise((resolve, reject) => {
             const basesql =
                 //"SELECT RM.room_no,U.second_name,U.first_name,CM.contract_name,CM.marks,U.handy_phone FROM ((([Contracts$] AS C INNER JOIN [Contracts_Master$] AS CM ON C.contract = CM.id) INNER JOIN [Users$] AS U ON C.user_id = U.id) INNER JOIN [Rooms$] AS R ON C.user_id = R.users_id) INNER JOIN [RoomsMaster$] AS RM ON R.rooms_id = RM.id";
-                "SELECT RM.room_no,U.second_name,U.first_name,CM.contract_name,GM.jp_group_name,CM.marks,U.handy_phone FROM ((((([Contracts$] AS C INNER JOIN [Contracts_Master$] AS CM ON C.contract = CM.id) INNER JOIN [Users$] AS U ON C.user_id = U.id) INNER JOIN [Rooms$] AS R ON C.user_id = R.users_id) INNER JOIN [RoomsMaster$] AS RM ON R.rooms_id = RM.id) INNER JOIN [Groups$] AS G ON R.room_id = G.room_id) INNER JOIN [Groups_Master$] AS GM ON G.group_id = GM.id";
+                "SELECT RM.room_no,U.second_name,U.first_name,CM.contract_name,GM.jp_group_name,CM.marks,U.handy_phone FROM ((((([Contracts$] AS C INNER JOIN [Contracts_Master$] AS CM ON C.contract = CM.id) INNER JOIN [Users$] AS U ON C.user_id = U.id) INNER JOIN [Rooms$] AS R ON C.user_id = R.users_id) INNER JOIN [RoomsMaster$] AS RM ON R.rooms_id = RM.id) INNER JOIN [Groups$] AS G ON R.rooms_id = G.room_id) INNER JOIN [Groups_Master$] AS GM ON G.group_id = GM.id";
             try {
                 const res = this.execSql(`${basesql} ORDER BY C.id ASC;`);
                 resolve(res);
-            }catch(e){
+            } catch (e) {
                 reject([]);
             }
-        })
+        });
     }
 }
