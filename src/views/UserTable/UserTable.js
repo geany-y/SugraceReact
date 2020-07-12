@@ -12,128 +12,154 @@ import CardBody from "components/Card/CardBody.js";
 import DataProviderFactory from "lib/DataProvider";
 
 const styles = {
-  cardCategoryWhite: {
-    "&,& a,& a:hover,& a:focus": {
-      color: "rgba(255,255,255,.62)",
-      margin: "0",
-      fontSize: "14px",
-      marginTop: "0",
-      marginBottom: "0"
+    cardCategoryWhite: {
+        "&,& a,& a:hover,& a:focus": {
+            color: "rgba(255,255,255,.62)",
+            margin: "0",
+            fontSize: "14px",
+            marginTop: "0",
+            marginBottom: "0",
+        },
+        "& a,& a:hover,& a:focus": {
+            color: "#FFFFFF",
+        },
     },
-    "& a,& a:hover,& a:focus": {
-      color: "#FFFFFF"
-    }
-  },
-  cardTitleWhite: {
-    color: "#FFFFFF",
-    marginTop: "0px",
-    minHeight: "auto",
-    fontWeight: "300",
-    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-    marginBottom: "3px",
-    textDecoration: "none",
-    "& small": {
-      color: "#777",
-      fontSize: "65%",
-      fontWeight: "400",
-      lineHeight: "1"
-    }
-  }
+    cardTitleWhite: {
+        color: "#FFFFFF",
+        marginTop: "0px",
+        minHeight: "auto",
+        fontWeight: "300",
+        fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+        marginBottom: "3px",
+        textDecoration: "none",
+        "& small": {
+            color: "#777",
+            fontSize: "65%",
+            fontWeight: "400",
+            lineHeight: "1",
+        },
+    },
 };
 
 const useStyles = makeStyles(styles);
-const title = 'サングレース大和高田';
+const title = "サングレース大和高田";
 
 export default function UserTable() {
-  const classes = useStyles();
-  const [thead, setThead] = useState({ name: [
-    '部屋番号',
-    '姓',
-    '名',
-    '店名',
-    'セイ',
-    'メイ',
-    '携帯',
-    '組',
-    '性別',
-    '生年月日',
-    '備考'
-  ] });
-  const [count, setCount] = useState(0);
-  const [tdataDefault, setTdatadDefault] = useState([]);
-  const [tdata, setTdata] = useState([]);
-  const [searchWord, setSearchWord] = useState("");
+    const classes = useStyles();
+    const [thead, setThead] = useState({
+        name: [
+            "部屋番号",
+            "姓",
+            "名",
+            "店名",
+            "セイ",
+            "メイ",
+            "携帯",
+            "組",
+            "性別",
+            "生年月日",
+            "備考",
+        ],
+    });
+    const [count, setCount] = useState(0);
+    const [tdataDefault, setTdatadDefault] = useState([]);
+    const [tdata, setTdata] = useState([]);
+    const [searchWord, setSearchWord] = useState("");
 
-  useEffect(() => {
-    const tbody = (async () => {
-      const dbPath = "C:\\db\\db.xls";
-      const dp = new DataProviderFactory(dbPath);
-      const result = await dp.getAllUser();
+    useEffect(() => {
+        const tbody = (async () => {
+            const dbPath = "C:\\db\\db.xls";
+            const dp = new DataProviderFactory(dbPath);
+            const result = await dp.getAllUser();
 
-      let i = 0;
+            let i = 0;
 
-      let users = [];
-      for (let row of result) {
-        let userInfo = [];
-        for(let name in row){
-          userInfo.push(row[name]);
+            let users = [];
+            for (let row of result) {
+                let userInfo = [];
+                if (
+                    row["deleted"] == 1 ||
+                    (row["second_name"] === "---" &&
+                        row["first_name"] === "---" &&
+                        row["tenant_name"] === "---")
+                ) {
+                    users.push([
+                        row["room_no"],
+                        "---",
+                        "---",
+                        "---",
+                        "---",
+                        "---",
+                        "---",
+                        "---",
+                        "---",
+                        "---",
+                        "空き家",
+                    ]);
+                    continue;
+                }
+                for (let name in row) {
+                    if (name === "deleted") {
+                        continue;
+                    }
+                    userInfo.push(row[name]);
+                }
+                users.push(userInfo);
+                i++;
+            }
+            setCount(i);
+            setTdata(users);
+            setTdatadDefault(users);
+            return users;
+        })();
+    }, []);
+
+    const onChangeSearchWord = (e) => {
+        const word = e.target.value;
+        let filterTdata = [];
+        let i = 0;
+        for (let row of tdataDefault) {
+            const res = row.filter((r) => r.match(word));
+            if (res.length > 0) {
+                filterTdata.push(row);
+                i++;
+            }
         }
-        users.push(userInfo);
-        i++;
-      }
-      setCount(i);
-      setTdata(users);
-      setTdatadDefault(users);
-      return users;
-    })();
-  }, []);
+        setCount(i);
+        setTdata(filterTdata);
+        setSearchWord(word);
+    };
 
-  const onChangeSearchWord = (e) => {
-    const word = e.target.value;
-    let filterTdata = [];
-    let i = 0;
-    for(let row of tdataDefault){
-      const res = row.filter(r => r.match(word));
-      if(res.length > 0){
-        filterTdata.push(row);
-        i++;
-      }
-    }
-    setCount(i);
-    setTdata(filterTdata);
-    setSearchWord(word);
-  } 
-
-  return (
-    <GridContainer>
-      <GridItem xs={12} sm={12} md={12}>
-        <Card>
-          <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>{ title }</h4>
-            <p>該当件数 { count } 件</p>
-            <CustomInput
-              labelText="検索"
-              id="search-enabled"
-              formControlProps={{
-                fullWidth: true
-              }}
-              inputProps={{
-                disabled: false,
-                defaultValue: "test",
-                value: searchWord,
-                onChange: onChangeSearchWord
-              }}
-            />
-          </CardHeader>
-          <CardBody>
-            <Table
-              tableHeaderColor="primary"
-              tableHead={thead.name}
-              tableData={tdata}
-            />
-          </CardBody>
-        </Card>
-      </GridItem>
-    </GridContainer>
-  );
+    return (
+        <GridContainer>
+            <GridItem xs={12} sm={12} md={12}>
+                <Card>
+                    <CardHeader color="primary">
+                        <h4 className={classes.cardTitleWhite}>{title}</h4>
+                        <p>該当件数 {count} 件</p>
+                        <CustomInput
+                            labelText="検索"
+                            id="search-enabled"
+                            formControlProps={{
+                                fullWidth: true,
+                            }}
+                            inputProps={{
+                                disabled: false,
+                                defaultValue: "test",
+                                value: searchWord,
+                                onChange: onChangeSearchWord,
+                            }}
+                        />
+                    </CardHeader>
+                    <CardBody>
+                        <Table
+                            tableHeaderColor="primary"
+                            tableHead={thead.name}
+                            tableData={tdata}
+                        />
+                    </CardBody>
+                </Card>
+            </GridItem>
+        </GridContainer>
+    );
 }

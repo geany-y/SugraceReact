@@ -51,34 +51,31 @@ export default class ResourceConnector {
 
     convertToJson(rs) {
         const max = rs.Fields.Count;
-        let jsonStr = '[';
+        let jsonStr = "[";
         if (!rs.Eof) {
             while (!rs.Eof) {
                 jsonStr += "{";
                 for (let i = 0; i < max; i++) {
-                    let v = String(rs.Fields(i).value).replace(
-                        "null",
-                        "---"
-                    );
+                    let v = String(rs.Fields(i).value).replace("null", "---");
                     jsonStr += '"' + rs.Fields(i).name + '" : ';
-                    if(rs.Fields(i).name === "birthday" && v !== "---"){
+                    if (rs.Fields(i).name === "birthday" && v !== "---") {
                         jsonStr += '"' + this.formatDate(v) + '"';
-                    }else{
+                    } else {
                         jsonStr += '"' + v + '"';
                     }
-                    jsonStr += ',';
+                    jsonStr += ",";
                 }
-                jsonStr = jsonStr.replace(/,$/g,"");
+                jsonStr = jsonStr.replace(/,$/g, "");
                 jsonStr += "},";
                 rs.MoveNext();
             }
-            jsonStr = jsonStr.replace(/,$/g,"");
+            jsonStr = jsonStr.replace(/,$/g, "");
             jsonStr += "]";
         }
         return JSON.parse(jsonStr);
     }
 
-    formatDate(utcDate){
+    formatDate(utcDate) {
         const date = new Date(utcDate);
         return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
     }
