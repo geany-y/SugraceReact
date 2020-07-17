@@ -29,6 +29,7 @@ import DashboardPage from "views/Dashboard/Dashboard.js";
 import UserProfile from "views/UserProfile/UserProfile.js";
 import UserTable from "views/UserTable/UserTable.js";
 import OfficerTable from "views/OfficerTable/OfficerTable.js";
+import UserEdit from "views/UserEdit/UserEdit.js";
 import Typography from "views/Typography/Typography.js";
 import Icons from "views/Icons/Icons.js";
 import Maps from "views/Maps/Maps.js";
@@ -43,6 +44,14 @@ const dashboardRoutes = [
     rtlName: "لوحة القيادة",
     icon: Dashboard,
     component: DashboardPage,
+    layout: "/admin"
+  },
+  {
+    path: "/edit_user/:userId",
+    name: "入居者情報編集",
+    rtlName: "قائمة الجدول",
+    icon: "content_paste",
+    component: UserEdit,
     layout: "/admin"
   },
   {

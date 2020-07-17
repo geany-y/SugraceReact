@@ -27,7 +27,7 @@ export default function CustomTable(props) {
                     className={classes.tableCell + " " + classes.tableHeadCell}
                     key={key}
                   >
-                    {prop}
+                  {prop}
                   </TableCell>
                 );
               })}
@@ -41,7 +41,7 @@ export default function CustomTable(props) {
                 {prop.map((prop, key) => {
                   return (
                     <TableCell className={classes.tableCell} key={key}>
-                      {prop}
+                    {prop}  
                     </TableCell>
                   );
                 })}

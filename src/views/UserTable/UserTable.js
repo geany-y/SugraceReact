@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 // core components
@@ -9,6 +10,7 @@ import Table from "components/Table/Table.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
+import Button from "components/CustomButtons/Button.js";
 import DataProviderFactory from "lib/DataProvider";
 
 const styles = {
@@ -44,13 +46,22 @@ const styles = {
 const useStyles = makeStyles(styles);
 const title = "サングレース大和高田";
 
+function createEditButton(id) {
+    return (
+        <React.Fragment>
+            <Link to={`/admin/edit_user/${id}`}>
+                <Button color="primary">編集</Button>
+            </Link>
+        </React.Fragment>
+    );
+}
+
 export default function UserTable() {
     const classes = useStyles();
     const [thead, setThead] = useState({
         name: [
             "部屋番号",
-            "姓",
-            "名",
+            "氏名",
             "店名",
             "セイ",
             "メイ",
@@ -59,6 +70,7 @@ export default function UserTable() {
             "性別",
             "生年月日",
             "備考",
+            ""
         ],
     });
     const [count, setCount] = useState(0);
@@ -76,6 +88,7 @@ export default function UserTable() {
 
             let users = [];
             for (let row of result) {
+                i++;
                 let userInfo = [];
                 if (
                     row["deleted"] == 1 ||
@@ -84,7 +97,6 @@ export default function UserTable() {
                         row["tenant_name"] === "---")
                 ) {
                     users.push([
-                        row["room_no"],
                         "---",
                         "---",
                         "---",
@@ -95,17 +107,36 @@ export default function UserTable() {
                         "---",
                         "---",
                         "空き家",
+                        "---"
                     ]);
                     continue;
                 }
+                let id = 0;
+                let second_name = "";
                 for (let name in row) {
+                    if(name === "id"){
+                        id = row[name];
+                        continue;
+                    }
                     if (name === "deleted") {
                         continue;
                     }
+                    if(name === "second_name"){
+                       second_name = row[name] + " ";
+                       continue;
+                    }
+                    if(name === "first_name"){
+                       userInfo.push(second_name + row[name]);
+                       continue;
+                    }
                     userInfo.push(row[name]);
                 }
+                let editElement = "---";
+                if(id !== "---"){
+                    editElement = createEditButton(id);
+                }
+                userInfo.push(editElement);
                 users.push(userInfo);
-                i++;
             }
             setCount(i);
             setTdata(users);
@@ -119,7 +150,11 @@ export default function UserTable() {
         let filterTdata = [];
         let i = 0;
         for (let row of tdataDefault) {
-            const res = row.filter((r) => r.match(word));
+            const res = row.filter((r) => {
+                if(typeof r === "string"){
+                   return r.match(word);
+                }
+            });
             if (res.length > 0) {
                 filterTdata.push(row);
                 i++;
