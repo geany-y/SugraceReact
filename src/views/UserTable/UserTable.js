@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
+import Store from "@material-ui/icons/Store";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -56,6 +57,15 @@ function createEditButton(id) {
     );
 }
 
+
+function createStateIcon() {
+    return (
+        <React.Fragment>
+            <Store />
+        </React.Fragment>
+    );
+}
+
 export default function UserTable() {
     const classes = useStyles();
     const [thead, setThead] = useState({
@@ -69,6 +79,7 @@ export default function UserTable() {
             "組",
             "性別",
             "生年月日",
+            "契約形態",
             "備考",
             ""
         ],
@@ -90,13 +101,13 @@ export default function UserTable() {
             for (let row of result) {
                 i++;
                 let userInfo = [];
-                if (
-                    row["deleted"] == 1 ||
+                if (row["deleted"] == 1 ||
                     (row["second_name"] === "---" &&
                         row["first_name"] === "---" &&
                         row["tenant_name"] === "---")
                 ) {
                     users.push([
+                        row["room_no"],
                         "---",
                         "---",
                         "---",
@@ -129,6 +140,16 @@ export default function UserTable() {
                        userInfo.push(second_name + row[name]);
                        continue;
                     }
+                    if(name === "owner_ship_type"){
+                       userInfo.push(createStateIcon());
+                       continue;
+                    }
+                    /*
+                    if(name === "state" && row[name] == 1){
+                       userInfo.push(createStaateIcon());
+                       continue;
+                    }
+                    */
                     userInfo.push(row[name]);
                 }
                 let editElement = "---";
@@ -144,6 +165,24 @@ export default function UserTable() {
             return users;
         })();
     }, []);
+
+    const getCsv = () => {
+        const csvName = "UserTable.csv";
+        let csv = "";
+        for(let row of tdata){
+        csv += row.join(',').replace(/,$/,'') + '\n'; 
+        }
+        const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+        //Blobでデータを作成する
+        const blob = new Blob([bom, csv], { type: "text/csv" });
+
+        window.navigator.msSaveBlob(blob, csvName);
+    }
+
+    const onClickCsvDownloadButton = (e) => {
+        e.preventDefault();
+        getCsv();
+    }
 
     const onChangeSearchWord = (e) => {
         const word = e.target.value;
@@ -185,6 +224,7 @@ export default function UserTable() {
                                 onChange: onChangeSearchWord,
                             }}
                         />
+                        <Button color="warning" onClick={ onClickCsvDownloadButton }>CSVダウンロード</Button>
                     </CardHeader>
                     <CardBody>
                         <Table

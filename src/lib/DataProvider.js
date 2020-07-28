@@ -44,7 +44,7 @@ class DataProvider {
     getAllUser() {
         return new Promise((resolve, reject) => {
             const sql =
-                "SELECT U.id,RM.room_no,U.second_name,U.first_name,T.tenant_name,U.jp_s_name,U.jp_f_name,U.handy_phone,GM.jp_group_name,U.gender,U.birthday,U.marks,U.deleted FROM ((((([Rooms$] AS R INNER JOIN [RoomsMaster$] AS RM ON R.rooms_id = RM.id) LEFT JOIN [Users$] AS U ON R.users_id = U.id) LEFT JOIN [UserStateMaster$] AS UM ON U.state = UM.id) LEFT JOIN [Tenants$] AS T ON R.tenants_id = T.id) LEFT JOIN [Groups$] AS G ON R.rooms_id = G.room_id) LEFT JOIN [Groups_Master$] AS GM ON G.group_id = GM.id";
+                "SELECT U.id,RM.room_no,U.second_name,U.first_name,T.tenant_name,U.jp_s_name,U.jp_f_name,U.handy_phone,GM.jp_group_name,U.gender,U.birthday,U.owner_ship_type,U.marks,U.deleted FROM ((((([Rooms$] AS R INNER JOIN [RoomsMaster$] AS RM ON R.rooms_id = RM.id) LEFT JOIN [Users$] AS U ON R.users_id = U.id) LEFT JOIN [UserStateMaster$] AS UM ON U.state = UM.id) LEFT JOIN [Tenants$] AS T ON R.tenants_id = T.id) LEFT JOIN [Groups$] AS G ON R.rooms_id = G.room_id) LEFT JOIN [Groups_Master$] AS GM ON G.group_id = GM.id";
             try {
                 const res = this.execSql(sql);
                 resolve(res);
