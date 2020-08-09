@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-import Store from "@material-ui/icons/Store";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -53,15 +52,6 @@ function createEditButton(id) {
             <Link to={`/admin/edit_user/${id}`}>
                 <Button color="primary">編集</Button>
             </Link>
-        </React.Fragment>
-    );
-}
-
-
-function createStateIcon() {
-    return (
-        <React.Fragment>
-            <Store />
         </React.Fragment>
     );
 }
@@ -141,15 +131,14 @@ export default function UserTable() {
                        continue;
                     }
                     if(name === "owner_ship_type"){
-                       userInfo.push(createStateIcon());
-                       continue;
+                        if (row[name] === "0"){
+                            userInfo.push("所有");
+                        }
+                        if (row[name] === "2"){
+                            userInfo.push("賃貸");
+                        }
+                        continue;
                     }
-                    /*
-                    if(name === "state" && row[name] == 1){
-                       userInfo.push(createStaateIcon());
-                       continue;
-                    }
-                    */
                     userInfo.push(row[name]);
                 }
                 let editElement = "---";
@@ -170,7 +159,7 @@ export default function UserTable() {
         const csvName = "UserTable.csv";
         let csv = "";
         for(let row of tdata){
-        csv += row.join(',').replace(/,$/,'') + '\n'; 
+            csv += row.join(',').replace(/,$/,'') + '\n'; 
         }
         const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
         //Blobでデータを作成する
@@ -208,7 +197,7 @@ export default function UserTable() {
         <GridContainer>
             <GridItem xs={12} sm={12} md={12}>
                 <Card>
-                    <CardHeader color="primary">
+                    <CardHeader color="success">
                         <h4 className={classes.cardTitleWhite}>{title}</h4>
                         <p>該当件数 {count} 件</p>
                         <CustomInput
@@ -224,11 +213,11 @@ export default function UserTable() {
                                 onChange: onChangeSearchWord,
                             }}
                         />
-                        <Button color="warning" onClick={ onClickCsvDownloadButton }>CSVダウンロード</Button>
+                        <Button color="primary" onClick={ onClickCsvDownloadButton }>CSVダウンロード</Button>
                     </CardHeader>
                     <CardBody>
                         <Table
-                            tableHeaderColor="primary"
+                            tableHeaderColor="success"
                             tableHead={thead.name}
                             tableData={tdata}
                         />

@@ -4,7 +4,10 @@ import { useParams } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from '@material-ui/core/MenuItem';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 // core components
 import GridItem from "components/Grid/GridItem.js";
@@ -50,9 +53,13 @@ export default function UserEdit() {
   const { userId } = useParams();
 
   const [roomNo, setRoomNo] = useState('');
+  const [gender, setGender] = useState('なし');
 
   const handleChange = (event) => {
     setRoomNo(event.target.value);
+  };
+  const onChangeGenderRadio = (event) => {
+    setGender(event.target.value);
   };
   return (
     <div>
@@ -96,7 +103,7 @@ export default function UserEdit() {
                     }}
                   />
                 </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
+                <GridItem xs={12} sm={12} md={3}>
                   <CustomInput
                     labelText="メイ"
                     id="jp_first_name"
@@ -107,6 +114,15 @@ export default function UserEdit() {
                       defaultValue: 'タロウ'
                     }}
                   />
+                </GridItem>
+                <GridItem xs={12} sm={12} md={3}>
+                  <FormControl component="fieldset">
+                    <RadioGroup row aria-label="gender" name="gender" value={gender} onChange={onChangeGenderRadio}>
+                      <FormControlLabel value="男" control={<Radio />} label="男" />
+                      <FormControlLabel value="女" control={<Radio />} label="女" />
+                      <FormControlLabel value="未設定" control={<Radio />} label="未設定" />
+                    </RadioGroup>
+                  </FormControl>
                 </GridItem>
               </GridContainer>
               <GridContainer>
@@ -138,8 +154,17 @@ export default function UserEdit() {
               <GridContainer>
                 <GridItem xs={12} sm={12} md={4}>
                   <CustomInput
-                    labelText="Email address"
-                    id="email-address"
+                    labelText="電話番号"
+                    id="tel"
+                    formControlProps={{
+                      fullWidth: true
+                    }}
+                  />
+                </GridItem>
+                <GridItem xs={12} sm={12} md={4}>
+                  <CustomInput
+                    labelText="携帯電話"
+                    id="handyPhone"
                     formControlProps={{
                       fullWidth: true
                     }}
